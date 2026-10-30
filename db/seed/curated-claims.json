@@ -1,0 +1,189 @@
+{
+  "_README": [
+    "OFFLINE FALLBACK CORPUS -- SYNTHETIC DEMO DATA, NOT REAL FACT-CHECKS.",
+    "",
+    "Used only when db/seed/liar/*.tsv is absent, so that `npm run db:seed` produces a",
+    "working demo without network access. Every claim, verdict, explanation and source",
+    "below was written for this project as illustrative placeholder content. The sources",
+    "are fictional ('Demo Wire Service', example.org) precisely so that nothing here can",
+    "be mistaken for a real ruling by a real organisation.",
+    "",
+    "The real corpus comes from `npm run liar:fetch`, which loads the LIAR dataset",
+    "(Wang, ACL 2017) -- ~12,800 genuine PolitiFact-rated claims."
+  ],
+  "sources": [
+    { "name": "Demo Wire Service", "domain": "wire.example.org", "reliability": 0.88 },
+    { "name": "Demo Health Review", "domain": "health.example.org", "reliability": 0.76 },
+    { "name": "Demo Community Blog", "domain": "blog.example.org", "reliability": 0.42 }
+  ],
+  "claims": [
+    {
+      "text": "Drinking two litres of lemon water every morning removes all toxins from the liver within a week.",
+      "verdict": "false",
+      "explanation": "The liver filters blood continuously on its own; no beverage accelerates or completes that process on a weekly schedule. Lemon water contributes hydration and vitamin C, nothing more.",
+      "source": "health.example.org",
+      "categories": ["Health", "Science"]
+    },
+    {
+      "text": "The national unemployment rate has fallen for eleven consecutive quarters.",
+      "verdict": "half_true",
+      "explanation": "The rate fell in nine of the eleven quarters cited and was flat in the other two. The direction of travel is right; the unbroken streak is not.",
+      "source": "wire.example.org",
+      "categories": ["Economy", "Politics"]
+    },
+    {
+      "text": "Electric vehicles produce more lifetime carbon emissions than petrol cars once battery manufacturing is counted.",
+      "verdict": "mostly_false",
+      "explanation": "Battery production does front-load emissions, but lifetime analyses in most grids show an electric vehicle breaking even within two to three years of typical driving and finishing well ahead.",
+      "source": "wire.example.org",
+      "categories": ["Environment", "Technology"]
+    },
+    {
+      "text": "The city council approved the new metro line without holding a single public consultation.",
+      "verdict": "false",
+      "explanation": "Three public consultations were held before the vote, with minutes published on the council's own portal.",
+      "source": "wire.example.org",
+      "categories": ["Politics"]
+    },
+    {
+      "text": "5G transmission towers weaken the human immune system.",
+      "verdict": "pants_on_fire",
+      "explanation": "5G uses non-ionising radio frequencies far below the energy needed to affect cells. There is no mechanism by which it could suppress immune function, and no measurement showing it does.",
+      "source": "health.example.org",
+      "categories": ["Health", "Technology"]
+    },
+    {
+      "text": "Government spending on public education rose by 12 percent last financial year.",
+      "verdict": "mostly_true",
+      "explanation": "Nominal spending rose 12.4 percent. Adjusted for inflation the real increase was closer to 7 percent, which the claim omits.",
+      "source": "wire.example.org",
+      "categories": ["Economy", "Education"]
+    },
+    {
+      "text": "Vitamin C supplements prevent the common cold if taken daily.",
+      "verdict": "mostly_false",
+      "explanation": "Trials show no reduction in how often healthy adults catch colds. Regular supplementation shortens duration slightly, which is a different and much smaller claim.",
+      "source": "health.example.org",
+      "categories": ["Health"]
+    },
+    {
+      "text": "More than half of the country's electricity now comes from renewable sources.",
+      "verdict": "half_true",
+      "explanation": "Renewables exceeded half of installed generating capacity, but supplied roughly a third of actual electricity delivered. Capacity and output are not the same number.",
+      "source": "wire.example.org",
+      "categories": ["Environment", "Economy"]
+    },
+    {
+      "text": "The new income tax slab means anyone earning under eight lakh rupees pays no tax at all.",
+      "verdict": "mostly_false",
+      "explanation": "The threshold applies to taxable income after deductions, not gross salary, so a portion of earners under that gross figure still owe tax.",
+      "source": "wire.example.org",
+      "categories": ["Economy", "Politics"]
+    },
+    {
+      "text": "Microwaving food in plastic containers destroys its nutritional value.",
+      "verdict": "false",
+      "explanation": "Microwaving affects nutrients about as much as any other short cooking method, and often less. The genuine concern with some plastics is chemical migration into food, not nutrient loss.",
+      "source": "health.example.org",
+      "categories": ["Health", "Science"]
+    },
+    {
+      "text": "The water supply project was completed six months ahead of its original deadline.",
+      "verdict": "true",
+      "explanation": "The contracted completion date and the commissioning certificate are both public, and the gap between them is just over six months.",
+      "source": "wire.example.org",
+      "categories": ["Politics"]
+    },
+    {
+      "text": "Reading on a backlit screen before bed makes it permanently harder to fall asleep.",
+      "verdict": "mostly_false",
+      "explanation": "Evening screen light does delay sleep onset for many people, but the effect is temporary and reverses when the exposure stops. 'Permanently' is unsupported.",
+      "source": "health.example.org",
+      "categories": ["Health", "Science"]
+    },
+    {
+      "text": "Crime in the capital has doubled over the last two years.",
+      "verdict": "mostly_false",
+      "explanation": "Total reported incidents rose about 18 percent. The doubling figure comes from one narrow category of property offence, not overall crime.",
+      "source": "wire.example.org",
+      "categories": ["Politics"]
+    },
+    {
+      "text": "Solar panels stop producing any power on cloudy days.",
+      "verdict": "false",
+      "explanation": "Output drops, typically to between 10 and 30 percent of peak, but panels continue generating from diffuse light.",
+      "source": "wire.example.org",
+      "categories": ["Environment", "Technology"]
+    },
+    {
+      "text": "A single tree absorbs one tonne of carbon dioxide every year.",
+      "verdict": "false",
+      "explanation": "A mature broadleaf tree absorbs on the order of 20 to 25 kilograms per year. One tonne annually is off by a factor of forty or more.",
+      "source": "wire.example.org",
+      "categories": ["Environment", "Science"]
+    },
+    {
+      "text": "The new labour law removes the requirement for overtime pay entirely.",
+      "verdict": "false",
+      "explanation": "The law changes how the overtime threshold is calculated for certain shift patterns. The obligation to pay overtime remains in the statute.",
+      "source": "wire.example.org",
+      "categories": ["Politics", "Economy"]
+    },
+    {
+      "text": "Honey never spoils and can be eaten safely after thousands of years.",
+      "verdict": "mostly_true",
+      "explanation": "Low water content and acidity make honey extraordinarily shelf-stable, and archaeological samples have been found unspoiled. Contaminated or diluted honey can still ferment.",
+      "source": "health.example.org",
+      "categories": ["Science", "Health"]
+    },
+    {
+      "text": "Online voting was used in the last general election in several districts.",
+      "verdict": "false",
+      "explanation": "No district used internet voting. A small pilot allowed electronic transmission of blank ballots to overseas voters, who returned them on paper.",
+      "source": "wire.example.org",
+      "categories": ["Politics", "Technology"]
+    },
+    {
+      "text": "Artificial sweeteners cause cancer in humans.",
+      "verdict": "mostly_false",
+      "explanation": "Early rodent studies used doses far beyond human consumption. Large human cohort studies have not established a causal link at normal intake levels.",
+      "source": "health.example.org",
+      "categories": ["Health", "Science"]
+    },
+    {
+      "text": "The budget allocates more money to defence than to health and education combined.",
+      "verdict": "half_true",
+      "explanation": "True for the central allocation alone. Counting state-level health and education spending, as this comparison usually does, reverses the ordering.",
+      "source": "wire.example.org",
+      "categories": ["Economy", "Politics"]
+    },
+    {
+      "text": "Humans only use ten percent of their brains.",
+      "verdict": "pants_on_fire",
+      "explanation": "Functional imaging shows activity across effectively the whole brain over the course of a day. This figure has no basis in neuroscience and never did.",
+      "source": "blog.example.org",
+      "categories": ["Science", "Health"]
+    },
+    {
+      "text": "Rail fares were frozen for three years before the latest increase.",
+      "verdict": "mostly_true",
+      "explanation": "Standard fares held flat for three years. A small surcharge on premium classes was introduced in the second year, which the claim glosses over.",
+      "source": "wire.example.org",
+      "categories": ["Economy"]
+    },
+    {
+      "text": "Charging a phone overnight permanently damages its battery.",
+      "verdict": "mostly_false",
+      "explanation": "Modern charge controllers stop drawing current at full capacity. Sustained heat and very high charge levels do age cells faster, but a night on the charger is not the step change the claim implies.",
+      "source": "blog.example.org",
+      "categories": ["Technology"]
+    },
+    {
+      "text": "The literacy rate in the district crossed ninety percent for the first time.",
+      "verdict": "true",
+      "explanation": "The latest survey records 90.4 percent, up from 88.1 percent, and prior rounds never exceeded ninety.",
+      "source": "wire.example.org",
+      "categories": ["Education"]
+    }
+  ]
+}
