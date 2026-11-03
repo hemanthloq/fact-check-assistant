@@ -46,3 +46,6 @@ next-env.d.ts
 
 # third-party corpus -- regenerate with `npm run liar:fetch`
 /db/seed/liar/
+
+# the teacher's blank template, not ours to redistribute
+/DBMS-Project-Template.docx

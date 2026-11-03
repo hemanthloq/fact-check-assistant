@@ -29,7 +29,7 @@ npm run dev                       # http://localhost:3000
 Two options, neither of which needs a server:
 
 ```bash
-npm run test:db      # runs the real migrations + 56 feature tests against in-process Postgres
+npm run test:db      # runs the real migrations + 62 feature tests against in-process Postgres
 npm run db:local     # starts a Postgres on 127.0.0.1:5433 that the app can actually use
 ```
 
@@ -136,7 +136,7 @@ later query. It is still stored, because it is what makes the match rate measura
 
 ---
 
-## The five advanced features
+## The advanced features
 
 Each is here because the design needs it.
 
@@ -147,6 +147,7 @@ Each is here because the design needs it.
 | 3 | **Stored function + procedure** — credibility scoring in PL/pgSQL; filing a verdict is one `CALL` that locks the claim, upserts the source, writes the ruling and tags topics | [`006_functions.sql`](db/migrations/006_functions.sql), [`008_procedures.sql`](db/migrations/008_procedures.sql) |
 | 4 | **Triggers** — three of them (below) | [`007_triggers.sql`](db/migrations/007_triggers.sql) |
 | 5 | **Transactions** — queueing a claim is four statements that must agree, wrapped in `BEGIN`/`COMMIT` with a `FOR UPDATE` lock on the chosen reviewer | `withTransaction()` in [`src/lib/claims.ts`](src/lib/claims.ts) |
+| 6 | **Recursive CTEs** — walking the `matched_claim_id` self-reference to trace a duplicate back to the ruling that answers it, and to credit each ruling for every submission it saved | `fn_claim_provenance()`, `v_ruling_reuse` in [`010_provenance.sql`](db/migrations/010_provenance.sql) |
 
 Plus four analytics **views** (`v_verified_claims`, `v_daily_activity`, `v_category_breakdown`,
 `v_reviewer_workload`) — the dashboard reads views, it does not sum rows in application code.
@@ -204,7 +205,7 @@ Full write-up, **including what the calibration cannot measure**, in
 ## Testing
 
 ```bash
-npm run test:db      # 56 assertions over the real migrations
+npm run test:db      # 62 assertions over the real migrations
 npm run typecheck
 npm run lint
 ```

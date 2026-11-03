@@ -523,6 +523,77 @@ async function main() {
     /does not exist/i,
   );
 
+  // --- recursive provenance walk ----------------------------------------------------------
+  console.log("\n  --- advanced feature: recursive queries ---");
+
+  // Build a two-hop chain by hand: a duplicate answered from a duplicate. The app only ever
+  // creates depth-1 chains today, which is exactly why the traversal must not assume depth 1.
+  const { rows: root } = await db.query<{ id: number }>(
+    `SELECT id FROM claims WHERE status = 'reviewed' ORDER BY id LIMIT 1`,
+  );
+  const rootId = root[0].id;
+
+  const { rows: hop1 } = await db.query<{ id: number }>(
+    `INSERT INTO claims (text, status, embedding, matched_claim_id, match_similarity)
+     VALUES ('A first duplicate answered from the original corpus ruling.', 'matched',
+             (SELECT embedding FROM claims WHERE id = $1), $1, 0.94)
+     RETURNING id`,
+    [rootId],
+  );
+  const { rows: hop2 } = await db.query<{ id: number }>(
+    `INSERT INTO claims (text, status, embedding, matched_claim_id, match_similarity)
+     VALUES ('A second duplicate answered from the first duplicate, two hops out.', 'matched',
+             (SELECT embedding FROM claims WHERE id = $1), $1, 0.90)
+     RETURNING id`,
+    [hop1[0].id],
+  );
+
+  const { rows: chain } = await db.query<{ depth: number; claim_id: number }>(
+    `SELECT depth, claim_id FROM fn_claim_provenance($1)`,
+    [hop2[0].id],
+  );
+  check(
+    "the recursive walk follows a two-hop match chain to the ruling",
+    chain.length === 3 && chain[2].claim_id === rootId,
+    `depth 0 -> ${chain.map((r) => `#${r.claim_id}`).join(" -> ")}`,
+  );
+  check(
+    "the walk returns steps in depth order",
+    chain.every((row, i) => Number(row.depth) === i),
+    chain.map((r) => r.depth).join(","),
+  );
+
+  const { rows: solo } = await db.query(`SELECT * FROM fn_claim_provenance($1)`, [rootId]);
+  check(
+    "a claim that owns its verdict has a one-row chain",
+    solo.length === 1,
+    `${solo.length} row(s)`,
+  );
+
+  const { rows: reuse } = await db.query<{ answered_submissions: number; chain_depth: number }>(
+    `SELECT answered_submissions, chain_depth FROM v_ruling_reuse WHERE claim_id = $1`,
+    [rootId],
+  );
+  check(
+    "v_ruling_reuse credits the root ruling for the whole chain",
+    Number(reuse[0]?.answered_submissions) === 2 && Number(reuse[0]?.chain_depth) === 2,
+    `${reuse[0]?.answered_submissions} submissions, depth ${reuse[0]?.chain_depth}`,
+  );
+
+  // A ring cannot be built through the app, but the depth cap is the only thing standing
+  // between a recursive CTE and a query that never returns.
+  await db.query(`UPDATE claims SET matched_claim_id = $1 WHERE id = $2`, [
+    hop2[0].id,
+    hop1[0].id,
+  ]);
+  const { rows: cyclic } = await db.query(`SELECT * FROM fn_claim_provenance($1)`, [hop2[0].id]);
+  check(
+    "the depth cap terminates a cyclic chain instead of hanging",
+    cyclic.length > 0 && cyclic.length <= 17,
+    `${cyclic.length} rows before the cap stopped it`,
+  );
+  await db.query(`UPDATE claims SET matched_claim_id = $1 WHERE id = $2`, [rootId, hop1[0].id]);
+
   // --- transaction -----------------------------------------------------------------------
   console.log("\n  --- advanced feature: transactions ---");
   const { rows: countBefore } = await db.query<{ n: number }>(

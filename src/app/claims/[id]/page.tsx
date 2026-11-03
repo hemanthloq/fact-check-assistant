@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { CredibilityBar, SimilarityRing } from "@/components/meters";
 import { SetupBanner } from "@/components/setup-banner";
 import { VerdictBadge, VerdictHeadline } from "@/components/verdict";
-import { getClaim } from "@/lib/claims";
+import { getClaim, getProvenance } from "@/lib/claims";
 import { checkDatabase } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import type { ClaimStatus } from "@/lib/types";
@@ -53,7 +53,11 @@ export default async function ClaimPage({ params }: { params: Promise<{ id: stri
   const claimId = Number.parseInt(id, 10);
   if (!Number.isFinite(claimId)) notFound();
 
-  const [claim, session] = await Promise.all([getClaim(claimId), getSession()]);
+  const [claim, session, provenance] = await Promise.all([
+    getClaim(claimId),
+    getSession(),
+    getProvenance(claimId),
+  ]);
   if (!claim) notFound();
 
   const status = STATUS_META[claim.status];
@@ -229,6 +233,41 @@ export default async function ClaimPage({ params }: { params: Promise<{ id: stri
                 This submission was answered from that claim&rsquo;s verdict. It was logged, but
                 deliberately kept out of the searchable corpus &mdash; a duplicate must never
                 become a second, verdict-less answer to a later query.
+              </p>
+            </div>
+          )}
+
+          {provenance.length > 1 && (
+            <div className="panel p-5">
+              <h2 className="label-xs">Where this answer comes from</h2>
+              <ol className="mt-3 space-y-2">
+                {provenance.map((step) => (
+                  <li key={step.claimId} className="flex items-start gap-2 text-sm">
+                    <span className="mt-0.5 w-4 shrink-0 text-right text-[0.7rem] text-muted">
+                      {step.depth}
+                    </span>
+                    {step.depth === 0 ? (
+                      <span className="text-ink-soft">This claim</span>
+                    ) : (
+                      <Link
+                        href={`/claims/${step.claimId}`}
+                        className="text-ink-soft transition-colors hover:text-ink"
+                      >
+                        Claim #{step.claimId}
+                        {step.matchSimilarity !== null && (
+                          <span className="text-muted">
+                            {" "}
+                            &middot; {(step.matchSimilarity * 100).toFixed(1)}%
+                          </span>
+                        )}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 border-t border-line pt-3 text-[0.7rem] leading-relaxed text-muted">
+                Traced by walking <code>matched_claim_id</code> with a recursive query, so the
+                trail stays complete however many hops the data holds.
               </p>
             </div>
           )}

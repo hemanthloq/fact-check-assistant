@@ -429,6 +429,44 @@ export async function getClaim(id: number): Promise<ClaimDetail | null> {
   };
 }
 
+export interface ProvenanceStep {
+  depth: number;
+  claimId: number;
+  claimText: string;
+  status: ClaimStatus;
+  matchSimilarity: number | null;
+  submittedAt: string;
+}
+
+/**
+ * Walks `claims.matched_claim_id` with a recursive CTE, from a submission to the ruling that
+ * ultimately answers it. Depth 1 is the common case, but the chain -- not the single hop -- is
+ * the honest answer to "whose verdict am I being shown?", and a recursive query is what makes
+ * that answer independent of how deep the data happens to go.
+ *
+ * Returns [] for a claim that answers itself, so callers can treat "no provenance" as falsy.
+ */
+export async function getProvenance(claimId: number): Promise<ProvenanceStep[]> {
+  const rows = await query<{
+    depth: number;
+    claim_id: number;
+    claim_text: string;
+    status: ClaimStatus;
+    match_similarity: number | null;
+    submitted_at: string;
+  }>(`SELECT * FROM fn_claim_provenance($1)`, [claimId]);
+
+  if (rows.length <= 1) return [];
+  return rows.map((row) => ({
+    depth: row.depth,
+    claimId: row.claim_id,
+    claimText: row.claim_text,
+    status: row.status,
+    matchSimilarity: row.match_similarity === null ? null : Number(row.match_similarity),
+    submittedAt: String(row.submitted_at),
+  }));
+}
+
 /**
  * The review queue. Each item carries its closest corpus neighbour, so a fact-checker can see
  * at a glance WHY the matcher gave up - "nothing even close" and "0.74, just under the bar"
